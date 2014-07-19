@@ -1,0 +1,14 @@
+PastPapers/
+figure/
+*.md
+*.html
+*.aux
+*.log
+*.out
+*.pdf
+*.tex
+*.nav
+*.snm
+*.toc
+*.vrb
+figs/
