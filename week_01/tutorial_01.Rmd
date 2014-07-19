@@ -1,0 +1,98 @@
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options(digits = 3)
+
+tyxtable <- function(x, trim = 2) {
+tmp <- textConnection(capture.output(xtable(x), file = NULL))
+tmp <- readLines(tmp)
+tmp <- tmp[-1:(-1 * trim)]
+writeLines(tmp)
+}
+```
+
+```{r packages, include = FALSE}
+library(xtable) # to print matrix in latex
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+# Tutorial 1
+
+1. Complete
+   a) Exercise 1
+   b) Exercise 2
+   c) Exercise 3 \newline\newline
+   in the **Introduction to R** handout (given out during first lecture and available on **R** page of course website).
+
+   \setcounter{enumi}{1}
+   a) $\text{Fahrenheit} = 9/5 \times \text{Celsius} + 32$.  The boiling point of water is $100$ degrees Celsius.  Write a fragment of **R** code to determine the boiling point of water in degrees Fahrenheit.
+
+```{r excersise_1}
+celsius_to_fahrenheit <- function(degrees) {
+    9/5 * degrees + 32
+}
+
+celsius_to_fahrenheit(100)
+```
+
+   b) Write a fragment of **R** code to enter a vector of temperature readings in degrees Fahrenheit, convert these to Celsius scale using an appropriate formula and print out the result.
+
+```{r exercise_2}
+celsius_to_fahrenheit(0:9)
+```
+
+   c) Find all solutions to the quadratic equation $2x^2 - 10x + 8 = 0$
+
+```{r exercise_3}
+coeff_a <- 2
+coeff_b <- -10
+coeff_c <- 8
+
+(0 - coeff_b + sqrt(coeff_b^2 - 4 * coeff_a * coeff_c)) / (2 * coeff_a)
+(0 - coeff_b - sqrt(coeff_b^2 - 4 * coeff_a * coeff_c)) / (2 * coeff_a)
+```
+
+2. Five randomly selected STAT293 students were each given a pedometer and asked to record the number of steps walked during the six-hour period between 12 noon and 6 pm on three successive days.  The data they submitted are presented in array format below where row $i$ corresponds to individual $i$ for $i = 1, 2, ..., 5$; column $j$ represents day $j$ for $j = 1, 2, 3$; and each observation is presented by $y_ij$.
+\begin{align*}
+```{r matrix, echo = FALSE, results = "asis"}
+x <- matrix(c(1053, 3029, 2001
+	      , 5745, 5095, 6790
+	      , 2569, 3975, 2011
+	      , 1500, 4500, 5000
+	      , 6397, 2056, 7309), 5, 3, byrow = TRUE)
+xprint <- xtable(x, align = rep("", ncol(x) + 1))
+print(xprint
+      , floating = FALSE
+      , tabular.environment = "bmatrix"
+      , hline.after = NULL
+      , include.rownames = FALSE
+      , include.colnames = FALSE
+      , comment = FALSE)
+```
+\end{align*}
+Use **R** to compute the value of each of the following terms and state what each value represents (`x` is the variable containing the matrix).
+a)  $y_{1.}$ The sum of row 1 is ```sum(x[1, ])```$= `r sum(x[1, ])`$.
+b)  $\overline{y}_{3.}$ The mean of row 3 is ```mean(x[3, ])```$= `r mean(x[3, ])`$.
+c)  $\overline{y}_{.3}$ The mean of column 3 is ```mean(x[, 3])```$= `r mean(x[, 3])`$.
+d)  $\overline{y}_{..}$ The mean of the matrix is ```mean(x)```$= `r mean(x)`$.
+
+3. Suppose there are 5 random variables: $X_1, X_2, ..., X_5$, each with mean $\mu$ and variance $\sigma^2$ and that each of these variables is independent of the other.  Find:
+   a) $E\left( \sum_{i = 1}^{5} X_i \right)$
+\begin{align*}
+& = E(X_1 + X_2 + ... + X_5) \\
+& = E(X_1) + E(X_2) + ... + E (X_5) \\
+& \text{Since the mean of each variable is } \mu \text{ then} \\
+& = 5\mu 
+\end{align*}
+   b) $E(\overline{X}) = \frac{1}{5} (\overline{X}_1 + \overline{X}_2 + ... + \overline{X}_5) = \frac{1}{5}(5\mu) = \mu$
+   \newline
+   c) $\text{Var} \left( \sum_{i = 1}^{n} X_i \right) = \sum_{i = 1}^{n} \text{Var}(X_i) \newline\text{ (since the covariance of independent variables is }0\text{) } = 5\sigma$
+   \newline
+   d) $\text{Var}(\overline{X})$
