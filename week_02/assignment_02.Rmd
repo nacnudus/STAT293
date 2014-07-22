@@ -1,0 +1,19 @@
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options(digits = 3)
+```
+
+```{r packages, include = FALSE}
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+# Assignment 2
+
