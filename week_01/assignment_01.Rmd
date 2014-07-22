@@ -27,93 +27,86 @@ Duncan Garmonsway 30020831
 # Assignment 1
 
 1. In the following groups of expressions ((1) and (2)) indicate which values will be the same as another.
-   1) (a) and (d) are the same because both represent the sum of all rows of the j\textsuperscript{th} group.
+   1) (a) and (d) are the same because both represent the sum of all rows of the $j$\textsuperscript{th} group.
    2) (a) and (d) are the same.  All other pairs imply that the sum of the squares is the same as the square of the sums, which is false, e.g. $y_1 = 1, y_2 = -1, \sum y_i^2 = 2, \left( \sum y_i \right)^2 = 0$.
 2. Expectations and Variances
    a) If $E(X_i) = \mu_i$ for $i = 1, ..., n$ find $E(\bar{X})$
 \begin{align*}
-E(\bar{X}) &= E \left( \frac{X_1 + X_2 + ... + X_n}{n} \right) \\
-&= E(X_1/n) + E(X_2/n) + ... + E(X_n/n) \\
-&= \frac{1}{n}E(X_1) + ... + \frac{1}{n}E(X_n) \\
-&= \frac{1}{n} \sum_{i = 1}^{n} E(X_i) \\
-&= \frac{1}{n}n\mu \\
-&= \mu
+E(\bar{X}) &= E \left( \frac{1}{k} \sum_{i = 1}^{k} X_i \right) \\
+&= \frac{1}{k} E \left( \sum_{i = 1}^{k} X_i \right) \\
+&= \frac{1}{k} \sum_{i = 1}^{k} E(X_i) \\
+&= \frac{1}{k} \sum_{i = 1}^{k} \mu_i \\
 \end{align*}
+\newpage
    b) If $Var(X_i) = \sigma^2$ for $i = 1, ..., n$ find $Var(\bar{X})$
 \begin{align*}
-Var(\bar{X}) &= Var\left(\frac{1}{n} \sum_{i = 1}^{n} X_i \right) \\
-&= Var\left( \sum_{i = 1}^{n} \frac{1}{n} X_i \right) \\
-&= \sum_{i = 1}^{n} \left( \frac{1}{n} \right)^2 Var(X_i) + \sum_{i = 1}^{n} \sum_{j = 1}^{n} Cov(X_i, X_j) \\
-&= \sum_{i = 1}^{n} \left( \frac{1}{n} \right)^2 \sigma^2 \text{ since we ignore covariance in this paper} \\
-&= \frac{1}{n^2} \times n\sigma^2 \\
-&= \frac{\sigma^2}{n}
+Var(\bar{X}) &= Var\left(\frac{1}{k} \sum_{i = 1}^{k} X_i \right) \\
+&= Var\left( \sum_{i = 1}^{k} \frac{1}{k} X_i \right) \\
+&= \sum_{i = 1}^{k} \left( \frac{1}{k} \right)^2 Var(X_i) + \sum_{i = 1}^{k} \sum_{j = 1}^{k} Cov(X_i, X_j) \\
+&= \sum_{i = 1}^{k} \left( \frac{1}{k} \right)^2 \sigma^2 + \sum_{i = 1}^{k} \sum_{j = 1}^{k} Cov(X_i, X_j) \\
+&\text{ we stop here unless we can assume independence } \\
+&= \sum_{i = 1}^{k} \left( \frac{1}{k} \right)^2 \sigma^2 = \frac{1}{k^2} \times k\sigma^2 = \frac{\sigma^2}{k}
 \end{align*}
-   c) Given the model: $Y_{ij} = \mu + \alpha_i + \epsilon_{ij}$ with $\mu$ and $\alpha_i$ fixed and $\epsilon_{ij} \overset{iid}{\sim} \mathrm{N}(0, \sigma^2)$, what is $E(Y_ij)$ and $Var(Y_ij)$?
-   \newline \newline
+   c) Given the model: $Y_{ij} = \mu + \alpha_i + \epsilon_{ij}$ with $\mu$ and $\alpha_i$ fixed and $\epsilon_{ij} \overset{\mathrm{iid}}{\sim} \mathrm{N}(0, \sigma^2)$, what is $E(Y_{ij})$ and $Var(Y_{ij})$?
 \begin{align*}
 E(Y_{ij}) &= \mu + \alpha_i \\
-Var(Y_{ij}) &= E\left((Y_{ij} - E(Y_ij))^2\right) \\
+Var(Y_{ij}) &= E\left[(Y_{ij} - E(Y_{ij}))^2\right] \\
 &\text{ substitute } E(Y_{ij}) = \mu + \alpha_i \text{ and } Y_{ij} = \mu + \alpha_i + \epsilon_{ij} \\
-&= E\left((\mu + \alpha_i + \epsilon_{ij} - (\mu + \alpha_i))^2\right) \\
-&= E\left(\epsilon_{ij}^2\right) \\
+&= E\left[(\mu + \alpha_i + \epsilon_{ij} - (\mu + \alpha_i))^2\right] \\
+&= E\left(\epsilon_{ij}^{2}\right) \\
 &= \sigma^2
 \end{align*}
 
 3.  Study.
    a) $Y_{ij} = \mu + \alpha_i + \epsilon_{ij}$
-$Y_{ij}$ is a random variable for the improvement in total symptoms score for child $j$ given treatment $i$ (1 = control, 2 = dextromethorpan, 3 = honey).
+$Y_{ij}$ is a random variable for the improvement in total symptoms score for child $j$ given treatment $i$ (1 = control, 2\nobreakspace =\nobreakspace dextromethorphan, 3 = honey).
 \newline\newline
-$\sum_{i = 1}^{3} \alpha_i = 0$
+$\sum_{i = 1}^{3} \alpha_i = 0$ (The effects sum to zero)
 \newline\newline
-$\epsilon_{ij} \overset{iid}{\sim} \mathrm{N}(0, \sigma^2)$
+$\epsilon_{ij} \overset{\mathrm{iid}}{\sim} \mathrm{N}(0, \sigma^2)$ (The errors are from identical standard normal distributions, independently)
+\newpage
    b) Boxplot.
 
-```{r question_03_b, fig.width = 5, fig.height = 3, units = "in", fig.cap = ""}
+```{r question_03_b, fig.width = 5, fig.height = 3.5, units = "in", fig.cap = ""}
 x <- read.table("honeycough.txt", header = TRUE)
-levels(x$treatment) <- c("control", "dextromethorpan", "honey")
-boxplot(score ~ treatment, 
-	data = x,
-	main = "Improvement in total symptoms score",
-	xlab = "Treatment",
-	ylab = "Improvement")
+levels(x$Treatment) <- c("control", "dextromethorphan", "honey")
+boxplot(Score ~ Treatment, 
+	data = x, main = "Improvement in total symptoms score",
+	xlab = "Treatment", ylab = "Improvement")
 ```
 
    c) Table of mean and variance of improvement scores per treatment group.
 
 ```{r question_03_c, results = "asis"}
-# Using the dplyr package by Hadley Wickham
-# and the knitr package by Yihui Xie
-library(dplyr)
-library(knitr)
-x_summary <- x %>% 
-group_by(treatment) %>% 
-summarize(mean = mean(score), variance = var(score))
-
+library(dplyr) # Using the dplyr package by Hadley Wickham
+library(knitr) # and the knitr package by Yihui Xie
+x_summary <- x %>% group_by(Treatment) %>% 
+summarize(Mean = mean(Score), Variance = var(Score))
 kable(x_summary)
 ```
 
-   Note that the published figures were $8.39$ (dextromethorpan) and $6.41$ (control).
+   Note that the published figures were $8.39$ (dextromethorphan) and $6.41$ (control).
 
    d) Overall mean and estimate of $\alpha_i$.
 
 ```{r question_03_d}
 # overall mean
-mean(x$score)
+mean(x$Score)
 
 # estimate of effect of each treatment group in one line of base R
-tapply(x$score, x$treatment, function(y) {mean(y) - mean(x$score)})
+tapply(x$Score, x$Treatment, function(y) {mean(y) - mean(x$Score)})
 ```
 
    e) Model fitting with `lm` and a table of coefficient estimates.
 
 ```{r question_03_e, results = "asis"}
-x_lm_summary <- summary(lm(score ~ treatment, data = x))
+x_lm_summary <- summary(lm(Score ~ Treatment, data = x))
 x_table <- x_lm_summary$coefficients[, 1, drop = FALSE]
 x_table <- x_lm_summary$coefficients
-rownames(x_table) <- c("intercept (mu)",
-		       "effect of dextromethorpan (alpha 2)",
-		       "effect of honey (alpha 3)")
+rownames(x_table) <- c("Intercept ($\\mu$)",
+		       "Effect of dextromethorphan ($\\alpha_2$)",
+		       "Effect of honey ($\\alpha_3$)")
 kable(x_table)
 ```
 
-   Honey effected the largest average improvement in cough symptoms, followed by dextromethorpan (both significant at 95% level).  Since the intercept is positive, the children may have been recovering regardless of the treatment.
+   Honey effected a larger average improvement in cough symptoms, compared with the control, than dextromethorphan (both significant at the 95% level).  Since the intercept is positive, the children may have been recovering regardless of the treatment.

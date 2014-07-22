@@ -1,4 +1,4 @@
-treatment	score
+Treatment	Score
 H	12
 H	11
 H	15
