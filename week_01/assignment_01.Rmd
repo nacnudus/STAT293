@@ -6,13 +6,6 @@ opts_chunk$set(echo = TRUE
 	       , message = FALSE
 	       , dpi = 300)
 options(digits = 3)
-
-tyxtable <- function(x, trim = 2) {
-tmp <- textConnection(capture.output(xtable(x), file = NULL))
-tmp <- readLines(tmp)
-tmp <- tmp[-1:(-1 * trim)]
-writeLines(tmp)
-}
 ```
 
 ```{r packages, include = FALSE}
