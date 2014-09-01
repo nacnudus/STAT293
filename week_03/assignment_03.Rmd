@@ -1,0 +1,90 @@
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options(digits = 3)
+```
+
+```{r packages, include = FALSE}
+library(knitr)
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+# Assignment 3
+
+1.  a) $\mathcal{H}_0:$ There was no difference of mean score in the word completion task between treatment groups.  $\mathcal{H}_A:$ The mean scores differed between treatment groups.
+
+   b)
+```{r question1b}
+alcohol <- read.csv("alcohol.csv")
+(Fobs <- anova(lm(score ~ group, data = alcohol))$`F value`[1])
+```
+   c)
+```{r question1c}
+set.seed(3243) # reproducibility
+permutations = 1000
+
+Fnull <- rep(NA, permutations)
+for (t in 1:1000) {
+    # Randomly reorder the groups.
+    group_reorder <- sample(alcohol$group)
+    # Perform an anova of score against the reordered groups and
+    # store the F statistic.
+    Fnull[t] <- anova(lm(alcohol$score ~ group_reorder))$`F value`[1]
+}
+# proportion of Fnull values >= Fobs
+(p <- sum(Fnull >= Fobs) / permutations)
+```
+   Since the $p$-value is $0$ from $1000$ permutations, we estimate that the true $p$-value is less than $0.001$ so we reject $\mathcal{H}_0$ at the 5% significance level; there was a significant difference of mean scores in the word completion task between different treatment groups.
+
+   d)
+```{r question3d}
+(p_anova <- anova(lm(score ~ group, data = alcohol))$`Pr(>F)`[1])
+```
+   Since the $p$-value of the ANOVA is less than $0.001$ we reject $\mathcal{H}_0$ at the 5% significance level; there was a significant difference of mean scores in the word completion task between different treatment groups.
+
+   e) If the ANOVA assumptions were met I would present the ANOVA conclusions as the ANOVA process is better known, but if the assumptions are not met then I would present the conclusions of the permutation test as they are more likely to be correct than ANOVA in such a case.
+
+2. a)
+```{r question2a, fig.height = 4}
+factpoison <- read.table("factpoison.txt"
+			 , header = TRUE
+			 , colClasses = c("factor", "factor", "numeric"))
+factpoison_lm <- lm(Time ~ Poison * Treatment, data = factpoison)
+par(mfrow = c(1, 2))
+plot(factpoison_lm, which = 1:2, ask = FALSE)
+
+# Levene's test using the car package
+car::leveneTest(factpoison_lm)$`Pr(>F)`[1]
+```
+   The assumption of constant variance is not met because there is a clear funneling pattern in the plot of residuals $vs$ fitted values, and because Levene's test is significant at the 5% level.  The assumption of normality of is not met because the q-q plot is far from straight.  Given these departures from the assumptions, I expect the conclusions from a normal theory ANOVA test to differ from those reached from a permutation test because the distribution of the F statistic under the null hypothesis may not be from the F distribution, so the $p$-value may be different.
+
+   b)i)
+```{r question2bi, results = "asis"}
+kable(anova(factpoison_lm))
+```
+
+   j)
+```{r question2bii}
+# To install an archived package, find the direct link on CRAN and use devtools, e.g.
+# devtools::install_url("http://cran.r-project.org/.../lmPerm_1.1-2.tar.gz")
+library(lmPerm)
+anova(lmp(Time ~ Poison * Treatment, data = factpoison))
+# doesn't return an object = doesn't deserve to be on CRAN!
+```
+
+3. a) False; according to the documentation it will still use a random sample of permutations if the number of observations exceeds the "maxExact" parameter, which defaults to 10.
+
+   b) False; `anova.lm()` defaults to Type I SS (sequential), whereas `anova.lmp()` defaults to type III.
+
+   c) True
+
+   d) True
+
+   e) True
