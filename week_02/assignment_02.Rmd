@@ -17,3 +17,61 @@ Duncan Garmonsway 30020831
 
 # Assignment 2
 
+1. a)
+\begin{align*}
+E \left( \bar{Y_{i.}} - \bar{Y_{i;.}} \right) \\
+&=E \left( \frac{1}{n_i} \sum_{j=1}^{n_i} Y_{ij} - \frac{1}{n_{i'}} \sum_{j=1}^{n_{i'}} Y_{ij} \right) \\
+&=E \left( \frac{1}{n_i} \sum_{j=1}^{n_i} \left( \mu + \alpha_i + \epsilon_{ij} \right) - \frac{1}{n_{i'}} \sum_{j=1}^{n_i'} \left( \mu + \alpha_{i'} + \epsilon_{i'j} \right) \right) \\
+&=E \left( \mu + \alpha_i + \epsilon_{ij} - \mu - \alpha_{i'} - \epsilon_{i'j} \right) \\
+&=E \left( \alpha_i - \alpha_{i'} \right) + E(\epsilon_{ij}) - E(\epsilon_{i'j}) \\
+&=E \left( \alpha_i - \alpha_{i'} \right) + 0 - 0 \\
+&=E \left( \alpha_i - \alpha_{i'} \right)
+\end{align*}
+   b)
+\begin{align*}
+Var(\bar{Y_{i.}} - \bar{Y_{i'.}}) \\
+&=Var(\bar{Y_{i.}}) + Var(\bar{-Y_{i'.}})) \\
+&=(1)^2 Var(\bar{Y_{i.}}) + (-1)^2 Var(\bar{Y_{i'.}})) \\
+&=Var(\bar{Y_{i.}}) + Var(\bar{Y_{i'.}}) \\
+&=\frac{\sigma^2}{n_i} + \frac{\sigma^2}{n_{i'}} \text{ (p.12 of the notes)} \\
+&=\sigma^2(\frac{1}{n_i} + \frac{1}{n_{i'}})
+\end{align*}
+
+2. a)
+\begin{align*}
+5 - 1 &= 4 \text{ so } X_1 \sim \chi^2_{4} \\
+12 - 7 &= 5 \text{ so } X_2 \sim \chi^2_{5} \\
+15 - 3 &= 12 \text{ so } X_3 \sim \chi^2_{12}
+\end{align*}
+
+   b) $W \sim \chi^2_{(5 + 6 + 13 = 24)}$ 
+
+   c) $W \sim \mathrm{F}_{(6, 13)}$
+
+3. a)
+```{r question03a, include = TRUE}
+Ybar_i <- c(4.054, 3.9977, 4.8130)
+s_i <- c(.7791, .8413, .6615)
+n_i <- c(10, 10, 30)
+
+n <- sum(n_i)
+k <- 3
+
+(SSE <- sum((n_i - 1) * s_i^2))
+
+(SST <- sum(n_i * Ybar_i^2) - (sum(n_i * Ybar_i)^2 / sum(n_i)))
+```
+
+   b) $SSE / \sigma^2 \sim \chi^2_{(40 - 3 = 37)} \text{ and } SST / \sigma^2 \sim \chi^2_{(3 - 1 = 2)}$
+
+   c)
+```{r question03c, include = TRUE}
+(MSE <- SSE / (n - k))
+
+(MST <- SST / (k - 1))
+
+(Fstat <- MST / MSE)
+
+(pval <- 1 - pf(Fstat, k - 1, n - k))
+```
+Since $p < 0.02$ there is sufficient evidence of differences among mean residue amounts at the 2% significance level, assuming all ANOVA assumptions have been met.
