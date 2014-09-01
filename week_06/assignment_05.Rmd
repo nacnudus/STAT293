@@ -1,0 +1,161 @@
+---
+title: "Assignment 5"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+knitr::opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options("digits" = 7)
+```
+
+```{r packages, include = FALSE}
+library(knitr)
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+1. a) Strangely this very cool paper doesn't mention any trainers, and uses Fisher's PLSD test, but anyway.  I think this study is an unbalanced randomised block design with two factors.  Factor A is `colony`, with four levels corresponding to particular colony sizes of interest (3, 6, 9, 12), so should be modelled as a fixed effect.  Factor B is `trainer`, with three particular levels, also to be modelled as a fixed effect.  Each colony includes at least one robot from each trainer, hence randomised block and not nested.
+
+   b) This is a nested design with two factors.  Factor A `production` machine, with five particular levels, to be modelled as a fixed effect.  Factor B `head`, four from each machine, with $4 \times 5 = 20$ levels, to be modelled as a random effect since the heads were randomly selected from each machine.  Since each head comes from only one machine, it is nested, not randomised block.
+
+   c) This is a nested design with two factors.  Factor A `forest`, with three particular levels, to be modelled as a fixed effect.  Factor B is the `tree`, with five levels.  It is not clear how the trees were chosen, but since they are described as "superior", I assume they were not chosen at random, so they should be modelled as a fixed effect.  Since each tree can be from only one forest, it is nested, not randomised block.
+
+2. a) Factor A is `site` with two levels, fixed effects.  Factor B is `batch` with six levels, random effects, nested within `site` since each batch can come from only one site.  The batches will need to be renumbered from 1 to 6 for R to recognise the nesting.
+
+   b)
+
+\begin{align*}
+Y_{ijk} &= \mu + \alpha_i + \mathrm{B}_{j(i)} + \epsilon_{ijk} \\
+\sum_{i = 1}^{n_i} \alpha_i &= 0 \\
+\mathrm{B}_{j(i)} &\overset{i.i.d.}{\sim} \mathcal{N}(0, \sigma^2_\mathrm{B}) \\
+\epsilon_{ijk} &\overset{i.i.d.}{\sim} \mathcal{N}(0, \sigma^2)
+\end{align*}
+
+   c)
+
+\begin{align*}
+E(Y_{ijk}) &= E(\mu + \alpha_i + \mathrm{B}_{j(i)} + \epsilon_{ijk}) \\
+&= E(\mu) + E(\alpha_i) + E(\mathrm{B}_{j(i)}) + E(\epsilon_{ijk}) \\
+&= \mu + \alpha_i + 0 + 0 \\
+&= \mu + \alpha_i
+\end{align*}
+
+\begin{align*}
+Var(Y_{ijk}) &= Var(\mu + \alpha_i + \mathrm{B}_{j(i)} + \epsilon_{ijk}) \\
+& \text{(assuming independence)} \\
+&= Var(\mu) + Var(\alpha_i) + Var(\mathrm{B}_{j(i)}) + Var(\epsilon_{ijk}) \\
+&= 0 + 0 + \sigma^2_\mathrm{B} + \sigma^2 \\
+&= \sigma^2_\mathrm{B} + \sigma^2
+\end{align*}
+
+   d)
+
+```{r question2d, echo = TRUE}
+library(nlme)
+
+tablets <- read.csv("tablets.csv",
+		    colClasses = c("factor", "factor", "numeric"))
+fit1 <- lme(quant ~ site, data = tablets, random = ~1|batch)
+summary(fit1)
+
+sigma2 <- as.numeric(VarCorr(fit1)["Residual", "StdDev"])^2
+sigma2B <- as.numeric(VarCorr(fit1)["(Intercept)", "StdDev"])^2
+```
+
+   e)
+
+\begin{align*}
+\sigma^2 &= `r sigma2` \\
+\sigma^2_\mathrm{B} &= `r sigma2B`
+\end{align*}
+
+   f) The company should focus on the variation between batches, since this is the source of the most variation, and there is no evidence for an effect due to site ($p > 0.1$):
+
+\begin{align*}
+\frac{\sigma^2_\mathrm{B}}{\sigma^2 + \sigma^2_\mathrm{B}} = \frac{`r sigma2B`}{`r sigma2` + `r sigma2B`} = `r sigma2B / sum(sigma2, sigma2B)`
+\end{align*}
+
+3. a) Factor A is `region` with two particular levels (Wellington, Auckland) to be modelled as a fixed effect.  Factor B is `school` with six randomly selected levels (S1, S2, ..., S6), nested within `region` (three schools from each), to be modelled as a random effect.  Factor C is `class`, with 12 randomly selected levels (C1, C2, ..., C12), nested within `school` (two classes from each school), to be modelled as a random effect.
+
+   b) 
+
+\begin{align*}
+Y_{ijkm} &= \mu + \alpha_i + \mathrm{B}_{j(i)} + \mathrm{C}_{k(ij)} + \epsilon_{ijkm} \\
+\sum_{i = 1}^{n_i} \alpha_i &= 0 \\
+\mathrm{B}_{j(i)} &\overset{i.i.d.}{\sim} \mathcal{N}(0, \sigma^2_\mathrm{B}) \\
+\mathrm{C}_{k(j(i)} &\overset{i.i.d.}{\sim} \mathcal{N}(0, \sigma^2_\mathrm{C}) \\
+\epsilon_{ijkm} &\overset{i.i.d.}{\sim} \mathcal{N}(0, \sigma^2)
+\end{align*}
+
+   c)
+
+\begin{align*}
+E(Y_{ijkm}) &= E(\mu + \alpha_i + \mathrm{B}_{j(i)} + \mathrm{C}_{k(ij)}+ \epsilon_{ijkm}) \\
+&= E(\mu) + E(\alpha_i) + E(\mathrm{B}_{j(i)}) + E(\mathrm{C}_{k(ij)})+ E(\epsilon_{ijkm}) \\
+&= \mu + \alpha_i + 0 + 0 + 0 \\
+&= \mu + \alpha_i
+\end{align*}
+
+\begin{align*}
+Var(Y_{ijkm}) &= Var(\mu + \alpha_i + \mathrm{B}_{j(i)} + \mathrm{C}_{k(ij)}+ \epsilon_{ijkm}) \\
+& \text{(assuming independence)} \\
+&= Var(\mu) + Var(\alpha_i) + Var(\mathrm{B}_{j(i)}) + Var(\mathrm{B}_{k(ij)})+ Var(\epsilon_{ijkm}) \\
+&= 0 + 0 + \sigma^2_\mathrm{B} + \sigma^2_\mathrm{C}+ \sigma^2 \\
+&= \sigma^2_\mathrm{B} + \sigma^2_\mathrm{C}+ \sigma^2
+\end{align*}
+
+\newpage
+
+   d) 
+
+```{r question3d, echo = TRUE, results = "asis"}
+library(knitr)
+
+anova_table <- read.csv("anova_table.csv", check.names = FALSE)
+kable(anova_table)
+```
+
+   e) 
+
+```{r question3e, echo = TRUE}
+nestncea <- read.csv("nestncea.csv")
+fit2 <- aov(credits ~ region + Error(region:school + school:class), data = nestncea)
+summary(fit2)
+
+region_table <- summary(fit2)$`Error: region:school`[[1]]
+MSA <- region_table["region", "Mean Sq"]
+MSB <- region_table["Residuals", "Mean Sq"]
+MSC <- summary(fit2)$`Error: school:class`[[1]]["Residuals", "Mean Sq"]
+MSE <- summary(fit2)$`Error: Within`[[1]]["Residuals", "Mean Sq"]
+
+sigma2 <- MSE
+sigma2C <- (MSC - MSE) / (4)
+sigma2B <- (MSB - MSC) / (2 * 4)
+nualpha <- (MSA - MSB) / (3 * 2)
+```
+
+We test $\mathcal{H}_o: \alpha_1 = \alpha_2 = 0$ vs $\mathcal{H}_A:$ At least one of the $\alpha_i$s does not equal zero.  We get $F = `r region_table["region", "F value"]`$ with `r region_table["region", "Df"]` and `r region_table["Residuals", "Df"]` degrees of freedom and $p$-value $= `r region_table["region", "Pr(>F)"]`$.  There is no evidence that mean scores differ between Auckland and Wellington.
+
+   f) 
+
+\begin{align*}
+\hat{\sigma}^2 &= MSE = `r sigma2` \\
+\hat{\sigma}^2_C &= \frac{MS_{C(B(A))} - MSE}{4} = \frac{`r MSC` - `r sigma2`}{4} = `r sigma2C` \\
+\hat{\sigma}^2_B &= \frac{MS_{B(A)} - MS_{C(B(A))}}{2 \times 4} = \frac{`r MSB` - `r MSC`}{`r 2 * 4`}= `r sigma2B` \text{ set to 0 since negative} \\
+\widehat{\nu(\alpha)} &= \frac{MS_A - MS_{B(A)}}{3 \times 2 \times 4} = \frac{`r MSA` - `r MSB`}{`r 3 * 2 * 4`} = `r sigma2B` \text{ set to 0 since negative}
+\end{align*}
+
+   g) 
+
+\begin{align*}
+\frac{\hat{\sigma}^2}{\hat{\sigma}^2 + \hat{\sigma}^2_C} = \frac{`r sigma2`}{`r sigma2` + `r sigma2C`} = `r proportion <- sigma2 / sum(sigma2, sigma2C); proportion`
+\end{align*}
+
+I would recommend focussing on the differences between classes, since this is the greatest source of variation in Level 2 credits in the model (`r proportion * 100`%).
