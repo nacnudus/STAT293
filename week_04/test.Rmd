@@ -1,0 +1,8 @@
+\begin{align*}
+`r 7.35641e-05`
+\end{align*}
+
+```{r}
+sessionInfo()
+```
+```

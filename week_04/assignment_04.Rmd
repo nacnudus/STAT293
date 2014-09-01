@@ -1,0 +1,158 @@
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+knitr::opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options("digits" = 7)
+```
+
+```{r packages, include = FALSE}
+library(knitr)
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+# Assignment 4
+
+1. a) These data should be analysed using a randomised block design because of the two explanatory variables recorded (boxer and round), only one is of interest (round) in its effect on the response variable (punching power), while the other adds noise.  The blocks are the boxers and the treatments are the rounds.
+
+   b) The block effect should be fitted as a fixed effect since eight particular boxers were studied, rather than a random sample of boxers, and the original paper explained that they were volunteers, so not a random sample of boxers.
+
+   c) $Y_{ijk} = \mu + \alpha_i + \beta_j + \epsilon_{ijk}$ for $i = 1, 2, 3, 4$; $j = 1, 2, ... , 8$; $k = 1$; $\sum \alpha_i = 0$; $\sum \beta_j = 0$; $\epsilon_{ijk} \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma^2)$.
+
+   d) i) First model: $\mathcal{H}_0: \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = 0$ \emph{vs} $\mathcal{H}_A: \text{ Not all } \alpha_i \text{ are equal}$ (there is an effect of massage/rest treatment on punching power, \emph{vs} no effect, after accounting for the variation due to the boxer).
+
+```{r question1di, results = "asis"}
+boxing <- read.table("boxing.txt"
+		     , header = TRUE
+		     , colClasses = c("factor", "factor", "integer"))
+
+fit1 <- anova(lm(POWER ~ BOXER + ROUND, data = boxing))
+kable(fit1)
+```
+
+$F \text{-value }= `r fit1["ROUND", "F value"]` \text{ on } (3, 21) \text{ degrees of freedom, } p \text{-value} = `r fit1["ROUND", "Pr(>F)"]`$.  Since $p < 0.05$ we reject the null hypothesis; there is strong statistical evidence of an effect of massage/rest treatments on the punching power of the boxers.
+
+   ii) The hypotheses are the same as for the first model: $\mathcal{H}_0: \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = 0$ \emph{vs} $\mathcal{H}_A: \text{ Not all } \alpha_i \text{ are equal}$ (there is an effect of massage/rest treatment on punching power, \emph{vs} no effect, not accounting for the variation due to the boxer).
+
+```{r question1dii, results = "asis"}
+boxing <- read.table("boxing.txt"
+		     , header = TRUE
+		     , colClasses = c("factor", "factor", "integer"))
+
+fit2 <- anova(lm(POWER ~ ROUND, data = boxing))
+kable(fit2)
+```
+
+$F \text{-value }= `r fit2["ROUND", "F value"]` \text{ on } (3, 28) \text{ degrees of freedom, } p \text{-value} = `r fit2["ROUND", "Pr(>F)"]`$.  Since $p > 0.3$, we do not reject the null hypothesis; there is very weak statistical evidence of an effect of massage/rest treatments on the punching power of the boxers.
+
+The conclusions differ because, in the first model, the factor "BOXER" explained some of the residual variance that was unexplained in the second model.  The lower residual variance leads to a lower MSE, which leads to a higher $F$-statistic (where $F = \frac{MST}{MSE}$), hence more power to reject the null hypothesis if it is false.
+
+   e)
+
+```{r question1e}
+summary(lm(POWER ~ BOXER + ROUND, data = boxing))
+```
+
+Boxer Two has the weakest punch, because they have the lowest parameter estimate compared with the reference level (Boxer One), and the estimate is significant at the 5% level so there is strong evidence that they have the weakest punch.  I would recommend treatment M5, a massage between rounds, because the estimate of its parameter is the largest compared with the reference level (M1), and has a positive effect on punching power, and the effect is significant at the 5% level so there is strong evidence that a massage between rounds is associated with increased punching power.
+
+2. a) These data should be analysed using a randomised block design because of the two explanatory variables recorded (student and plant presence), only one is of interest (plant presence) in its effect on the response variable (finger temperature), while the other adds noise.  The blocks are the students and the treatments are the plant presence.
+
+   b) The block effect should be fitted as a random effect because the students were chosen randomly.
+
+   c) $Y_{ijk} = \mu + \alpha_i + B_j + \epsilon_{ijk}$ for $i = 1, 2, 3$; $j = 1, 2, ... , 10$; $k = 1$; $\sum \alpha_i = 0$; $B_j \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma^2)$; $\epsilon_{ijk} \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma^2)$.
+
+   d) i) First model: $\mathcal{H}_0: \alpha_1 = \alpha_2 = \alpha_3 = 0$ \emph{vs} $\mathcal{H}_A: \text{ Not all } \alpha_i \text{ are equal}$ (there is an effect of plant presence on the stress level of humans).
+
+```{r question2d}
+library(nlme)
+
+plants <- read.csv("plants.csv"
+		   , header = TRUE,
+		   , colClasses = c("factor", "factor", "numeric"))
+(fit3 <- summary(lme(temperature ~ plant, data = plants, random = ~1 | student)))
+```
+
+The mean for the treatment "live plant" was 95.21 degrees Fahrenheit.  The mean for the treatment "no plant" was $95.21 - 0.01 = 95.20$ degrees Fahrenheit, slightly more stress, however with a $p$-value of 0.99 this was insignificant.  The mean for the treatment "plant photo" was $95.21 + 0.13 = 95.34$ degrees Fahrenheit, slightly less stress, however with a $p$-value of 0.86 this was also insignificant. The effects of no plant and plant photo were insignificant ($p > 0.05$); there is extremely weak evidence of an effect of the presence of no plant or a photo of a plant on the temperature of the fingers (or stress) of the subjects, compared with the effect of a live plant.
+
+   e)
+
+```{r question2e}
+(sigma <- as.numeric(VarCorr(fit3)["Residual", "StdDev"])) 
+# residual variance
+(sigma_squared <- as.numeric(VarCorr(fit3)["Residual", "Variance"])) 
+# variance due to blocks
+
+(sigma_B <- as.numeric(VarCorr(fit3)["(Intercept)", "StdDev"])) 
+# residual s.d.
+(sigma_squared_B <- as.numeric(VarCorr(fit3)["(Intercept)", "Variance"])) 
+# s.d. due to blocks
+```
+
+\begin{align*}
+&\hat{\sigma}^2 = `r sigma`^2 = `r sigma_squared` \text{ (residual variance)} \\
+&\hat{\sigma}^2_B = 7.356341*10^{-05})^2 = 5.411575*10^{-09} \text{ (variance due to blocks)} \\
+&\hat{\sigma}^2 + \hat{\sigma}^2_B = `r sum(sigma_squared, sigma_squared_B)` \text{ (total variance)}
+\end{align*}
+
+   The proportion of variance that is due to blocks is:
+\begin{align*}
+&\frac{\hat{\sigma}^2_B}{\hat{\sigma}^2 + \hat{\sigma}^2_B} = \frac{5.411575*10^{-09}}{5.411575*10^{-09} + `r sigma_squared`} = 1.911142*10^-09
+\end{align*}
+
+   The proportion of variance that is unexplained is:
+\begin{align*}
+&\frac{\hat{\sigma}^2}{\hat{\sigma}^2 + \hat{\sigma}^2_B} = \frac{`r sigma_squared`}{5.411575*10^{-09} + `r sigma_squared`} = 1 \text{ (rounded)}
+\end{align*}
+
+3. a) The blocks are the albums.  The treatments are the music services.
+
+   b) The block should be fitted as a random effect because the albums were randomly selected.
+
+   c) $Y_{ijk} = \mu + \alpha_i + B_j + \epsilon_{ijk}$ for $i = 1, 2, ..., 5$; $j = 1, 2, ... , 5$; $k = 1$; $\sum \alpha_i = 0$; $B_j \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma^2)$; $\epsilon_{ijk} \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma^2)$.
+
+   d) $\mathcal{H}_0: \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = 0$ \emph{vs} $\mathcal{H}_A: \text{ Not all } \alpha_i \text{ are equal}$ (there is an effect of music service on album price, \emph{vs} no effect).
+
+```{r question}
+rbdmusic <- read.table("rbdmusic.txt"
+		       , sep = "\t"
+		       , header = TRUE
+		       , colClasses = c("factor", "factor", "numeric"))
+
+fit4 <- lme(Price ~ Store, data = rbdmusic, random = ~ 1|Album)
+(summary4 <- summary(fit4))
+(anova4 <- anova(fit4))
+```
+
+The $F$-statistic is `r anova4["Store", "F-value"]` on (`r anova4["Store", "numDF"]`, `r anova4["Store", "denDF"]`) degrees of freedom.  The $p$-value is `r anova4["Store", "p-value"]`.  Since $p > 0.05$ we do not reject the null hypothesis; there is extremely weak statistical evidence of an effect of music store on album prices.
+
+   e) The difference in average price between iTunes and Wal-Mart is `r summary4$coefficients$fixed["StoreWal-Mart"]` (units not given).  This difference is not statistically significant at the 5% level because the $p$-value is larger than 0.05 (0.335).
+
+   f)
+
+```{r question3f}
+(sigma <- as.numeric(VarCorr(fit4)["Residual", "StdDev"])) 
+# residual variance
+(sigma_squared <- as.numeric(VarCorr(fit4)["Residual", "Variance"])) 
+# variance due to blocks
+
+(sigma_B <- as.numeric(VarCorr(fit4)["(Intercept)", "StdDev"])) 
+# residual s.d.
+(sigma_squared_B <- as.numeric(VarCorr(fit4)["(Intercept)", "Variance"])) 
+# s.d. due to blocks
+```
+
+\begin{align*}
+&\hat{\sigma}^2 = `r sigma`^2 = `r sigma_squared` \text{ (residual variance)} \\
+&\hat{\sigma}^2_B = 0.000157^2 = 2.47*10^{-08} \text{ (variance due to blocks)} \\
+&\hat{\sigma}^2 + \hat{\sigma}^2_B = `r sum(sigma_squared, sigma_squared_B)` \text{ (total variance)}
+\end{align*}
+
+   The proportion of variance that is due to blocks is:
+\begin{align*}
+&\frac{\hat{\sigma}^2_B}{\hat{\sigma}^2 + \hat{\sigma}^2_B} = \frac{2.47*10^{-08}}{2.47*10^{-08} + `r sigma_squared`} = 1.21*10^{-09}
+\end{align*}

@@ -1,0 +1,26 @@
+Album	Store	Price
+D12 World	iTunes	11.99
+D12 World	Wal-Mart	9.44
+D12 World	Music Now	13.99
+D12 World	Music Match	20.79
+D12 World	Napster	9.95
+Damita Jo	iTunes	13.99
+Damita Jo	Wal-Mart	9.44
+Damita Jo	Music Now	13.99
+Damita Jo	Music Match	12.49
+Damita Jo	Napster	13.95
+30 No. 1 Hits	iTunes	9.99
+30 No. 1 Hits	Wal-Mart	27.28
+30 No. 1 Hits	Music Now	13.99
+30 No. 1 Hits	Music Match	9.99
+30 No. 1 Hits	Napster	9.95
+Feels Like Home	iTunes	12.87
+Feels Like Home	Wal-Mart	9.44
+Feels Like Home	Music Now	9.99
+Feels Like Home	Music Match	11.99
+Feels Like Home	Napster	13.95
+Up	iTunes	9.99
+Up	Wal-Mart	17.44
+Up	Music Now	13.99
+Up	Music Match	9.99
+Up	Napster	18.81

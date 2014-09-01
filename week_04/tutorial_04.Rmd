@@ -1,0 +1,41 @@
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options(digits = 3)
+
+tyxtable <- function(x, trim = 2) {
+tmp <- textConnection(capture.output(xtable(x), file = NULL))
+tmp <- readLines(tmp)
+tmp <- tmp[-1:(-1 * trim)]
+writeLines(tmp)
+}
+```
+
+```{r packages, include = FALSE}
+library(knitr)
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+# Tutorial 1
+```{r question2, results = "asis"}
+cholesterol <- read.csv("cholesterol.csv"
+			, colClasses = c("factor", "factor", "numeric"))
+
+kable(anova(lm(reduction ~ block + diet, data = cholesterol)))
+kable(anova(lm(reduction ~ diet, data = cholesterol)))
+```
+
+```{r question3, results = "asis"}
+library(nlme)
+
+engineer <- read.csv("engineer.csv"
+		     , colClasses = c("factor", "factor", "numeric"))
+summary(lme(price ~ engineer, data = engineer, random = ~1 | job))
+```
