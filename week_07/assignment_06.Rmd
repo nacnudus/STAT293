@@ -1,0 +1,179 @@
+---
+title: "Assignment 6"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+include = FALSE
+echo = FALSE
+knitr::opts_chunk$set(echo = TRUE
+	       , warning = FALSE
+	       , message = FALSE
+	       , dpi = 300)
+options("digits" = 7)
+```
+
+```{r packages, include = FALSE}
+library(knitr)
+```
+
+```{r functions, include = FALSE}
+# adapted from http://stackoverflow.com/a/20751549
+bmatrix = function(x, digits=NULL, ...) {
+  library(xtable)
+  default_args = list(include.colnames=FALSE, only.contents=TRUE,
+                      include.rownames=FALSE, hline.after=NULL, comment=FALSE,
+                      print.results=FALSE)
+  passed_args = list(...)
+  calling_args = c(list(x=xtable(x, digits=digits)),
+                   c(passed_args,
+                     default_args[setdiff(names(default_args), names(passed_args))]))
+  cat("\\begin{align*}\\begin{bmatrix}\n",
+      do.call(print.xtable, calling_args),
+      "\\end{bmatrix}\n\\end{align*}")
+}
+```
+
+STAT 293, Term 2 2014
+
+Duncan Garmonsway 30020831
+
+1. a) $\beta_0 = -0.0304$ is the mean population of a census block when all the other predictor variables ($X_i$s) are zero, that is, when there are neither low- nor high-density residential areas in the block.  $\beta_0$ is negative, which is meaningless because it suggests negative population.
+\newline
+\newline
+   $\beta_1 = 2.006$ represents the expected change in the response variable $Y$ (population) per unit change in $X_1$ (proportion of block with low-density residential areas), when the other explanatory variable ($X_2$) is held constant.
+\newline
+\newline
+   $\beta_2 = 5.006$ represents the expected change in the response variable $Y$ (population) per unit change in $X_2$ (proportion of block with high-density residential areas), when the other explanatory variable ($X_1$) is held constant.
+
+   b) The design matrix would have $n = 125$ rows and $p = 2$ columns plus one for the intercept, so three columns altogether.
+
+2. a) $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \epsilon_i$ where we assume $\epsilon_i \overset{i.i.d}{\sim} \mathcal{N}(0, \sigma^2)$
+   \newline
+   \newline
+   $Y$ is the response variable (`Spend`) for observation $X = x_i$
+   \newline
+   \newline
+   $\beta_0$ is a fixed, unknown constant for the intercept.
+   \newline
+   \newline
+   $\beta_1$ and $\beta_2$ are fixed, unknown parameters.
+   \newline
+   \newline
+   $\{X_i\}$s are fixed, known constants (explanatory variables) for the predictors `Pay` and `Region`, which are measured without error.
+
+   b)
+
+```{r question2b, echo = FALSE, results = "asis"}
+educspend <- read.table("educspend.txt", header = TRUE)
+fit1 <- lm(Spend ~ Pay + Region, data = educspend)
+model_matrix <- model.matrix(fit1)[1:10, ]
+bmatrix(model_matrix, digits = c(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0))
+```
+
+The design matrix for the entire dataset would have `r nrow(model.matrix(fit1))` rows.
+
+   c)
+
+```{r question2c1}
+(fit1 <- summary(lm(Spend ~ Pay, data = educspend)))
+fit1_intercept <- fit1[["coefficients"]]["(Intercept)", "Estimate"]
+fit1_pay <- fit1[["coefficients"]]["Pay", "Estimate"]
+```
+
+The total regression coefficient $B_1 = `r fit1_pay`$, which is the expected change in `Spend` per unit change in `Pay`, ignoring the effect of any other variables.
+
+```{r question2c2}
+(fit2 <- summary(lm(Spend ~ Region, data = educspend)))
+```
+
+There are eight regression coefficients, each of which is effectively total because a factor can only have one value at a time, so all other coefficients will be multiplied by zero, i.e. held constant.
+
+The coefficient for region `ENC` (which is the intercept, because `ENC` is the reference level), is `r fit2[["coefficients"]]["(Intercept)", "Estimate"]`, which is the expected change in `Spend` given the region is `ENC`.
+
+The coefficient for region `ESC` is `r fit2[["coefficients"]]["RegionESC", "Estimate"]`, which is the expected change in `Spend` given the region is `ESC`.
+
+The coefficient for region `MA` is `r fit2[["coefficients"]]["RegionMA", "Estimate"]`, which is the expected change in `Spend` given the region is `MA`.
+
+The coefficient for region `MN` is `r fit2[["coefficients"]]["RegionMN", "Estimate"]`, which is the expected change in `Spend` given the region is `MN`.
+
+The coefficient for region `NE` is `r fit2[["coefficients"]]["RegionNE", "Estimate"]`, which is the expected change in `Spend` given the region is `NE`.
+
+The coefficient for region `PA` is `r fit2[["coefficients"]]["RegionPA", "Estimate"]`, which is the expected change in `Spend` given the region is `PA`.
+
+The coefficient for region `SA` is `r fit2[["coefficients"]]["RegionSA", "Estimate"]`, which is the expected change in `Spend` given the region is `SA`.
+
+The coefficient for region `WNC` is `r fit2[["coefficients"]]["RegionWNC", "Estimate"]`, which is the expected change in `Spend` given the region is `WNC`.
+
+The coefficient for region `WSC` is `r fit2[["coefficients"]]["RegionWSC", "Estimate"]`, which is the expected change in `Spend` given the region is `WSC`.
+
+```{r question2c3}
+(fit3 <- summary(lm(Spend ~ Pay + Region, data = educspend)))
+```
+
+The partial regression coefficient $B_1 = `r fit3[["coefficients"]]["Pay", "Estimate"]`$, which is the expected change in `Spend` per unit change in `Pay`, ignoring the effect of the region.
+
+The coefficient for region `ENC` (which is the intercept, because `ENC` is the reference level), is `r fit3[["coefficients"]]["(Intercept)", "Estimate"]`, which is the expected change in `Spend` given the region is `ENC`.
+
+The coefficient for region `ESC` is `r fit3[["coefficients"]]["RegionESC", "Estimate"]`, which is the expected change in `Spend` given the region is `ESC`, assuming `Pay` is held constant.
+
+The coefficient for region `MA` is `r fit3[["coefficients"]]["RegionMA", "Estimate"]`, which is the expected change in `Spend` given the region is `MA`, assuming `Pay` is held constant.
+
+The coefficient for region `MN` is `r fit3[["coefficients"]]["RegionMN", "Estimate"]`, which is the expected change in `Spend` given the region is `MN`, assuming `Pay` is held constant.
+
+The coefficient for region `NE` is `r fit3[["coefficients"]]["RegionNE", "Estimate"]`, which is the expected change in `Spend` given the region is `NE`, assuming `Pay` is held constant.
+
+The coefficient for region `PA` is `r fit3[["coefficients"]]["RegionPA", "Estimate"]`, which is the expected change in `Spend` given the region is `PA`, assuming `Pay` is held constant.
+
+The coefficient for region `SA` is `r fit3[["coefficients"]]["RegionSA", "Estimate"]`, which is the expected change in `Spend` given the region is `SA`, assuming `Pay` is held constant.
+
+The coefficient for region `WNC` is `r fit3[["coefficients"]]["RegionWNC", "Estimate"]`, which is the expected change in `Spend` given the region is `WNC`, assuming `Pay` is held constant.
+
+The coefficient for region `WSC` is `r fit3[["coefficients"]]["RegionWSC", "Estimate"]`, which is the expected change in `Spend` given the region is `WSC`, assuming `Pay` is held constant.
+
+   d) $\hat{\sigma}^2 = `r fit3$sigma`^2 = `r fit3$sigma^2`$.
+
+```{r question3, include = FALSE}
+movies <- read.csv("movies.csv", header = TRUE)
+fit1 <- lm(Box ~ . -Movie, data = movies)
+model_matrix <- model.matrix(fit1)[1:10, ]
+# bmatrix(model_matrix, digits = c(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0))
+```
+
+3. a) The design matrix $\mathbf{X}$ has $n = `r nrow(movies)`$ rows and six columns plus one for the intercept, so seven columns altogether.  The vectory $\mathbf{Y}$ has $`r nrow(movies)`$ rows and one column.
+
+   b) $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 X_3 + \epsilon_i$ where we assume $\epsilon_i \overset{i.i.d}{\sim} \mathcal{N}(0, \sigma^2)$
+   \newline
+   \newline
+   $Y$ is the response variable (`Box`) for observation $X = x_i$
+   \newline
+   \newline
+   $\beta_0$ is a fixed, unknown constant for the intercept.
+   \newline
+   \newline
+   $\beta_1$, $\beta_2$ and $\beta_3$ are fixed, unknown parameters.
+   \newline
+   \newline
+   $\{X_i\}$s are fixed, known constants (explanatory variables) for the predictors `Rate`, `User` and `Meta`, which are measured without error.
+
+   c)
+
+```{r question3c}
+library(asbio)
+pairs(~ Rate + User + Meta, data = movies, cex.labels = 2.5, cex = 1.5,
+      lower.panel = panel.lm, upper.panel = panel.cor.res)
+```
+
+There is some evidence of multicollinearity between all three variables, though none correlate more strongly than 0.87.
+
+   d)
+
+```{r question3d}
+(fit2 <- summary(lm(Box ~ Rate + User + Meta, data = movies)))
+```
+
+$\hat{y}_i = -169.0862 + 35.4962 \times \text{Rate} + 0.4328 \times \text{User} + 1.2462 \times \text{Meta}$
+
+   e) The expected change in box office takings is 35.4962 times the unit change in `Rate`, when `User` and `Meta` are held constant.  As `Rate` increases, so do the expected box office takings.
+
+
