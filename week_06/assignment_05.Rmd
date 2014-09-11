@@ -64,6 +64,7 @@ tablets <- read.csv("tablets.csv",
 		    colClasses = c("factor", "factor", "numeric"))
 fit1 <- lme(quant ~ site, data = tablets, random = ~1|batch)
 summary(fit1)
+anova(fit1)
 
 sigma2 <- as.numeric(VarCorr(fit1)["Residual", "StdDev"])^2
 sigma2B <- as.numeric(VarCorr(fit1)["(Intercept)", "StdDev"])^2
@@ -141,7 +142,7 @@ sigma2B <- (MSB - MSC) / (2 * 4)
 nualpha <- (MSA - MSB) / (3 * 2)
 ```
 
-We test $\mathcal{H}_o: \alpha_1 = \alpha_2 = 0$ vs $\mathcal{H}_A:$ At least one of the $\alpha_i$s does not equal zero.  We get $F = `r region_table["region", "F value"]`$ with `r region_table["region", "Df"]` and `r region_table["Residuals", "Df"]` degrees of freedom and $p$-value $= `r region_table["region", "Pr(>F)"]`$.  There is no evidence that mean scores differ between Auckland and Wellington.
+We test $\mathcal{H}_0: \alpha_1 = \alpha_2 = 0$ vs $\mathcal{H}_A:$ At least one of the $\alpha_i$s does not equal zero.  We get $F = `r region_table["region", "F value"]`$ with `r region_table["region", "Df"]` and `r region_table["Residuals", "Df"]` degrees of freedom and $p$-value $= `r region_table["region", "Pr(>F)"]`$.  There is no evidence that mean scores differ between Auckland and Wellington.
 
    f) 
 
